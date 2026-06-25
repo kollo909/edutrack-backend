@@ -43,15 +43,10 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints
                 .requestMatchers("/auth/**", "/actuator/health").permitAll()
-                // Admin only
                 .requestMatchers("/admin/**", "/users/**").hasRole("ADMIN")
-                // Principal + Admin
                 .requestMatchers("/analytics/**", "/reports/**").hasAnyRole("ADMIN", "PRINCIPAL")
-                // Scanner + Admin can record attendance
                 .requestMatchers("/attendance/scan").hasAnyRole("ADMIN", "SCANNER")
-                // Everything else requires authentication
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
@@ -63,12 +58,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of(
+        config.setAllowedOrigins(List.of(
             "http://localhost:3000",
             "http://localhost:5173",
-            "https://*.vercel.app",
-            "https://*.netlify.app",        // ✅ covers all Netlify deployments
-            "https://*.edutrack.school"
+            "https://silly-beijinho-8475ce.netlify.app"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
