@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: edutrack-backend
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/edutrack}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # use 'validate' in production after initial setup
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  mail:
+    host: ${BREVO_SMTP_HOST:smtp-relay.brevo.com}
+    port: ${BREVO_SMTP_PORT:587}
+    username: ${BREVO_SMTP_USER:}
+    password: ${BREVO_SMTP_KEY:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /api
+
+edutrack:
+  jwt:
+    # BUG FIX #9: No fallback value — app will refuse to start if JWT_SECRET is not set
+    # This prevents accidental use of a public default in production.
+    secret: ${JWT_SECRET}
+    expiration-ms: 86400000     # 24 hours
+  school:
+    name: ${SCHOOL_NAME:Mahinda College}
+    email-from: ${EMAIL_FROM:noreply@edutrack.school}
+  qr:
+    base-url: ${QR_BASE_URL:https://app.edutrack.school}
+
+logging:
+  level:
+    com.edutrack: INFO
+    org.springframework.security: WARN
